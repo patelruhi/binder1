@@ -1,0 +1,119 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+library(RSocrata)
+library(readr)
+library(dplyr)
+library(stringr)
+library(tidyverse)
+library(janitor)
+library(lubridate)
+library(scales)
+
+```
+
+```{r}
+mydata <- read_csv("data.csv") %>%
+  clean_names()
+
+mydata_clean <- mydata %>%
+  mutate(as.numeric(order_price)) %>%
+  mutate(as.numeric(distance_from_restaurant))
+```
+```{r}
+
+q1 <- mydata_clean %>%
+  filter(city_name == "Miami") %>%
+  summarise( val = mean(order_price,na.rm= TRUE))
+
+q1
+```
+```{r}
+q2 <- mydata_clean %>%
+  filter(city_name == "Ft. Lauderdale" & rush_hour== "Yes") %>%
+  summarise(val2 = sum(number_of_deliveries, na.rm = TRUE))
+
+q2
+```
+```{r}
+q3 <- mydata_clean %>%
+  filter(restaurant_type == "Fast Food") %>%
+  group_by(city_name) %>%
+  count(val3 = n()) %>%
+  arrange(desc(n))
+q3
+```
+```{r}
+q4 <- mydata_clean %>%
+  filter(city_name == "Jacksonville") %>%
+  group_by(driver_name) %>%
+  count(val4 = n()) %>%
+  arrange(desc(n))
+
+q4
+```
+
+```{r}
+q5 <- mydata_clean %>%
+  filter(city_name == "Miami" & delivery_status == "1") %>%
+  group_by(restaurant_type) %>%
+  summarise( val5 = mean(minutes_late,na.rm= TRUE)) %>%
+  arrange(val5)
+q5
+```
+```{r}
+q6 <- mydata_clean %>%
+  filter(city_name == "Hialeah") %>%
+  group_by(rush_hour) %>%
+  select(distance_to_address) %>%
+  arrange(desc(distance_to_address))
+q6
+```
+
+```{r}
+q7 <- mydata_clean %>%
+  filter(city_name == "Tallahassee") %>%
+  slice_max(distance_from_restaurant, n=5)%>%
+  summarise(val7 = mean(order_price, na.rm = TRUE)) 
+  
+q7
+
+```
+```{r}
+q8 <- mydata_clean %>%
+  filter(city_name == "Hialeah" & rush_hour == "Yes") %>%
+  group_by(restaurant_type) %>%
+  summarise(val8 = mean(distance_to_address, na.rm = TRUE)) %>%
+  arrange(val8)
+  
+q8  
+```
+```{r}
+q9 <- mydata_clean %>%
+  filter(city_name == "Jacksonville" & urban_address == "Yes") %>%
+  select(order_price, driver_name) %>%
+  arrange(order_price)
+q9
+```
+```{r}
+q10 <- mydata_clean %>%
+  filter(city_name == "Tallahassee" & restaurant_type == "Fine Dining") %>%
+  summarise(val10 = mean(weather_quality, na.rm = TRUE))
+
+q10
+
+q11 <- mydata_clean %>%
+  filter(weather_quality < 42.10211) %>%
+  filter(city_name == "Tallahassee" & restaurant_type == "Fine Dining") %>%
+  summarise(val11 = sum(number_of_deliveries, na.rm =  TRUE))
+
+q11
+```
+
